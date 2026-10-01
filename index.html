@@ -2,7 +2,23 @@
 <html lang="es">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+/>
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+/>
+
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+/>
 
 <title>Galaxia de Milagros Lopez</title>
 
@@ -11,88 +27,103 @@
 html,
 body {
     margin: 0;
+    padding: 0;
+
+    width: 100%;
     height: 100%;
+
     overflow: hidden;
+
     background: #000;
+
     font-family: Arial, sans-serif;
+
+    touch-action: none;
+
+    overscroll-behavior: none;
+}
+
+body {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
 }
 
 canvas {
     display: block;
-}
 
-.title {
+    width: 100vw !important;
+    height: 100vh !important;
+
     position: fixed;
-    top: 30px;
-    width: 100%;
-    text-align: center;
-    font-size: 48px;
-    font-weight: bold;
-    color: #FFF0F8;
 
-    text-shadow:
-        0 0 10px #FFB6D9,
-        0 0 20px #FF69B4,
-        0 0 40px #FF1493;
-
-    z-index: 10;
-    pointer-events: none;
+    top: 0;
+    left: 0;
 }
 
 #play-btn {
     position: fixed;
+
     bottom: 30px;
     left: 50%;
 
     transform: translateX(-50%);
 
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.65);
 
     border: 2px solid #FF69B4;
 
-    color: #FFB6D9;
+    color: #FFD4E8;
 
-    padding: 10px 20px;
+    padding: 12px 24px;
 
     font-size: 18px;
 
-    border-radius: 20px;
+    border-radius: 25px;
 
     cursor: pointer;
 
-    z-index: 20;
+    z-index: 100;
 
     text-shadow:
         0 0 5px #FF69B4;
 
     box-shadow:
-        0 0 10px rgba(255, 105, 180, 0.6);
+        0 0 15px rgba(255, 105, 180, 0.7);
 
     transition: 0.3s;
 }
 
 #play-btn:hover {
-    background: rgba(255, 105, 180, 0.2);
+    background:
+        rgba(255, 105, 180, 0.2);
 }
 
 </style>
+
 </head>
 
 <body>
 
 <button id="play-btn">
-🎵 Reproducir Música
+    🎵 Reproducir Música
 </button>
 
 <canvas id="c"></canvas>
 
-<audio id="audio" loop preload="auto">
-
+<audio
+    id="audio"
+    loop
+    preload="auto"
+>
     <source
         src="La_Mujer_Perfecta.mp3"
         type="audio/mpeg"
     >
-
 </audio>
 
 
@@ -112,29 +143,6 @@ const audio =
 
 const playBtn =
     document.getElementById("play-btn");
-
-
-playBtn.addEventListener(
-    "click",
-    () => {
-
-        if (audio.paused) {
-
-            audio
-                .play()
-                .catch(
-                    e =>
-                        console.error(
-                            "No se pudo reproducir el audio.",
-                            e
-                        )
-                );
-
-            playBtn.style.display =
-                "none";
-        }
-    }
-);
 
 
 // =====================================================
@@ -161,13 +169,13 @@ const camera =
         60,
 
         window.innerWidth /
-            window.innerHeight,
+        window.innerHeight,
 
         1,
 
         5000
-    );
 
+    );
 
 camera.position.set(
     0,
@@ -180,16 +188,17 @@ camera.position.set(
 // RENDER
 // =====================================================
 
+const canvas =
+    document.getElementById("c");
+
 const renderer =
     new THREE.WebGLRenderer({
 
-        canvas:
-            document.getElementById("c"),
+        canvas: canvas,
 
         antialias: true
 
     });
-
 
 renderer.setSize(
 
@@ -198,7 +207,6 @@ renderer.setSize(
     window.innerHeight
 
 );
-
 
 renderer.setPixelRatio(
 
@@ -220,8 +228,8 @@ const controls =
         camera,
 
         renderer.domElement
-    );
 
+    );
 
 controls.enableDamping =
     true;
@@ -243,7 +251,7 @@ controls.maxPolarAngle =
 
 
 // =====================================================
-// GRUPO PRINCIPAL DE LA GALAXIA
+// GALAXIA PRINCIPAL
 // =====================================================
 
 const galaxyGroup =
@@ -255,22 +263,19 @@ scene.add(
 
 
 // =====================================================
-// ESTRELLAS DEL UNIVERSO
+// ESTRELLAS DE FONDO
 // =====================================================
 
 const starsGeo =
     new THREE.BufferGeometry();
 
-
 const starsCount =
     20000;
-
 
 const pos =
     new Float32Array(
         starsCount * 3
     );
-
 
 const cols =
     new Float32Array(
@@ -326,7 +331,6 @@ starsGeo.setAttribute(
 
 );
 
-
 starsGeo.setAttribute(
 
     "color",
@@ -356,8 +360,11 @@ const starsMat =
 scene.add(
 
     new THREE.Points(
+
         starsGeo,
+
         starsMat
+
     )
 
 );
@@ -370,16 +377,13 @@ scene.add(
 const dustGeo =
     new THREE.BufferGeometry();
 
-
 const dustCount =
     40000;
-
 
 const dustPos =
     new Float32Array(
         dustCount * 3
     );
-
 
 const dustCols =
     new Float32Array(
@@ -415,10 +419,8 @@ for (
         Math.cos(theta)
         * radius;
 
-
     dustPos[i * 3 + 1] =
         y;
-
 
     dustPos[i * 3 + 2] =
         Math.sin(theta)
@@ -429,7 +431,6 @@ for (
         Math.random();
 
 
-    // Tonos rosa-blanco
     dustCols[i * 3] =
         1;
 
@@ -454,7 +455,6 @@ dustGeo.setAttribute(
     )
 
 );
-
 
 dustGeo.setAttribute(
 
@@ -488,8 +488,11 @@ const dustMat =
 galaxyGroup.add(
 
     new THREE.Points(
+
         dustGeo,
+
         dustMat
+
     )
 
 );
@@ -502,14 +505,17 @@ galaxyGroup.add(
 const sunCoreRadius =
     70;
 
-
 const sunCore =
     new THREE.Mesh(
 
         new THREE.SphereGeometry(
+
             sunCoreRadius,
+
             32,
+
             32
+
         ),
 
         new THREE.MeshBasicMaterial({
@@ -527,7 +533,7 @@ galaxyGroup.add(
 
 
 // =====================================================
-// RESPLANDOR ROSADO CENTRAL
+// RESPLANDOR CENTRAL
 // =====================================================
 
 function createGlowingRing() {
@@ -536,7 +542,6 @@ function createGlowingRing() {
         document.createElement(
             "canvas"
         );
-
 
     canvas.width =
         1024;
@@ -561,6 +566,7 @@ function createGlowingRing() {
             512,
             512,
             512
+
         );
 
 
@@ -569,24 +575,20 @@ function createGlowingRing() {
         "rgba(255,255,255,1)"
     );
 
-
     grad.addColorStop(
         0.15,
         "rgba(255,182,217,1)"
     );
-
 
     grad.addColorStop(
         0.35,
         "rgba(255,105,180,0.8)"
     );
 
-
     grad.addColorStop(
         0.65,
         "rgba(255,20,147,0.25)"
     );
-
 
     grad.addColorStop(
         1,
@@ -596,7 +598,6 @@ function createGlowingRing() {
 
     ctx.fillStyle =
         grad;
-
 
     ctx.fillRect(
         0,
@@ -646,7 +647,6 @@ const ring =
 ring.rotation.x =
     -Math.PI / 2;
 
-
 galaxyGroup.add(
     ring
 );
@@ -662,7 +662,6 @@ function createSunText() {
         document.createElement(
             "canvas"
         );
-
 
     canvas.width =
         1024;
@@ -680,22 +679,17 @@ function createSunText() {
     ctx.font =
         "bold 80px Arial";
 
-
     ctx.textAlign =
         "center";
-
 
     ctx.textBaseline =
         "middle";
 
-
     ctx.fillStyle =
         "white";
 
-
     ctx.shadowColor =
         "rgba(255,105,180,1)";
-
 
     ctx.shadowBlur =
         25;
@@ -708,6 +702,7 @@ function createSunText() {
         512,
 
         100
+
     );
 
 
@@ -749,6 +744,7 @@ sunTextSprite.scale.set(
     25,
 
     1
+
 );
 
 
@@ -759,6 +755,7 @@ sunTextSprite.position.set(
     sunCoreRadius - 50,
 
     0
+
 );
 
 
@@ -768,7 +765,7 @@ scene.add(
 
 
 // =====================================================
-// CREAR FLOR ROSADA TRANSPARENTE
+// FLOR ROSADA TRANSPARENTE
 // =====================================================
 
 function createPinkFlowerTexture() {
@@ -796,7 +793,6 @@ function createPinkFlowerTexture() {
         128;
 
 
-    // Fondo completamente transparente
     ctx.clearRect(
         0,
         0,
@@ -846,6 +842,7 @@ function createPinkFlowerTexture() {
 
                 0,
                 -20
+
             );
 
 
@@ -854,12 +851,10 @@ function createPinkFlowerTexture() {
             "#FFD4E8"
         );
 
-
         gradient.addColorStop(
             0.45,
             "#FF8FC7"
         );
-
 
         gradient.addColorStop(
             1,
@@ -873,7 +868,6 @@ function createPinkFlowerTexture() {
 
         ctx.shadowColor =
             "rgba(255,105,180,0.6)";
-
 
         ctx.shadowBlur =
             8;
@@ -952,6 +946,7 @@ function createPinkFlowerTexture() {
 
                 0,
                 -10
+
             );
 
 
@@ -1015,6 +1010,7 @@ function createPinkFlowerTexture() {
             center,
             center,
             30
+
         );
 
 
@@ -1023,12 +1019,10 @@ function createPinkFlowerTexture() {
         "#FFF8FC"
     );
 
-
     centerGradient.addColorStop(
         0.35,
         "#FFB6D9"
     );
-
 
     centerGradient.addColorStop(
         1,
@@ -1061,7 +1055,7 @@ function createPinkFlowerTexture() {
     ctx.fill();
 
 
-    // Pequeños detalles blancos
+    // Detalles blancos
     for (
         let i = 0;
         i < 20;
@@ -1128,7 +1122,7 @@ function createPinkFlowerTexture() {
 
 
 // =====================================================
-// VARIACIONES DE FLORES ROSADAS
+// TEXTURAS DE FLORES
 // =====================================================
 
 const flowerTextures = [
@@ -1162,9 +1156,11 @@ for (
         flowerTextures[
 
             Math.floor(
+
                 Math.random()
                 *
                 flowerTextures.length
+
             )
 
         ];
@@ -1173,17 +1169,13 @@ for (
     const material =
         new THREE.SpriteMaterial({
 
-            map:
-                tex,
+            map: tex,
 
-            transparent:
-                true,
+            transparent: true,
 
-            depthWrite:
-                false,
+            depthWrite: false,
 
-            alphaTest:
-                0.01
+            alphaTest: 0.01
 
         });
 
@@ -1219,6 +1211,7 @@ for (
         size,
 
         1
+
     );
 
 
@@ -1268,13 +1261,7 @@ const frases = [
 
     "Mi flor favorita 🌸",
 
-    "Eres bella 🥰",
-
-    "Eres Hermosa 🥰",
-
-    "Eres Preciosa 🥰",
-
-    "La Mujer Perfecta 🥰",
+    "Siempre bella 🥰",
 
     "Eres Luz ✨",
 
@@ -1298,7 +1285,7 @@ const frases = [
 
 
 // =====================================================
-// CREAR TEXTURA DE FRASE
+// TEXTO DE FRASES
 // =====================================================
 
 function createFraseText(
@@ -1327,23 +1314,18 @@ function createFraseText(
     ctx.font =
         "bold 60px Arial";
 
-
     ctx.textAlign =
         "center";
 
-
     ctx.textBaseline =
         "middle";
-
 
     ctx.fillStyle =
         "#FFF5FA";
 
 
-    // Primer resplandor rosa
     ctx.shadowColor =
         "#FF69B4";
-
 
     ctx.shadowBlur =
         15;
@@ -1360,10 +1342,8 @@ function createFraseText(
     );
 
 
-    // Segundo resplandor rosa fuerte
     ctx.shadowBlur =
         30;
-
 
     ctx.shadowColor =
         "#FF1493";
@@ -1484,6 +1464,217 @@ for (
 
 
 // =====================================================
+// AJUSTAR TAMAÑO DE ESCENA
+// =====================================================
+
+function resizeScene() {
+
+    const width =
+        window.innerWidth;
+
+    const height =
+        window.innerHeight;
+
+
+    camera.aspect =
+        width / height;
+
+
+    camera.updateProjectionMatrix();
+
+
+    renderer.setSize(
+
+        width,
+
+        height,
+
+        false
+
+    );
+
+
+    renderer.setPixelRatio(
+
+        Math.min(
+
+            window.devicePixelRatio,
+
+            2
+
+        )
+
+    );
+
+}
+
+
+// =====================================================
+// BOTÓN MÚSICA + FULLSCREEN + HORIZONTAL
+// =====================================================
+
+playBtn.addEventListener(
+    "click",
+    async () => {
+
+        // =========================================
+        // REPRODUCIR AUDIO
+        // =========================================
+
+        if (audio.paused) {
+
+            audio
+                .play()
+                .catch(
+
+                    e =>
+                        console.error(
+
+                            "No se pudo reproducir el audio.",
+
+                            e
+
+                        )
+
+                );
+
+        }
+
+
+        // =========================================
+        // DETECTAR MÓVIL
+        // =========================================
+
+        const isMobile =
+
+            /Android|iPhone|iPad|iPod/i.test(
+
+                navigator.userAgent
+
+            );
+
+
+        if (isMobile) {
+
+            // =====================================
+            // PANTALLA COMPLETA
+            // =====================================
+
+            try {
+
+                const element =
+                    document.documentElement;
+
+
+                if (
+                    element.requestFullscreen
+                ) {
+
+                    await element.requestFullscreen();
+
+                }
+
+                else if (
+                    element.webkitRequestFullscreen
+                ) {
+
+                    await element.webkitRequestFullscreen();
+
+                }
+
+                else if (
+                    element.msRequestFullscreen
+                ) {
+
+                    await element.msRequestFullscreen();
+
+                }
+
+            }
+
+            catch (
+                error
+            ) {
+
+                console.log(
+
+                    "No se pudo activar pantalla completa:",
+
+                    error
+
+                );
+
+            }
+
+
+            // =====================================
+            // ORIENTACIÓN HORIZONTAL
+            // =====================================
+
+            try {
+
+                if (
+
+                    screen.orientation
+
+                    &&
+
+                    screen.orientation.lock
+
+                ) {
+
+                    await screen.orientation.lock(
+
+                        "landscape"
+
+                    );
+
+                }
+
+            }
+
+            catch (
+                error
+            ) {
+
+                console.log(
+
+                    "El navegador no permite bloquear la orientación:",
+
+                    error
+
+                );
+
+            }
+
+        }
+
+
+        // =========================================
+        // OCULTAR BOTÓN
+        // =========================================
+
+        playBtn.style.display =
+            "none";
+
+
+        // =========================================
+        // REAJUSTAR ESCENA
+        // =========================================
+
+        setTimeout(
+
+            resizeScene,
+
+            300
+
+        );
+
+    }
+);
+
+
+// =====================================================
 // ANIMACIÓN
 // =====================================================
 
@@ -1505,13 +1696,17 @@ function animate() {
     controls.update();
 
 
-    // Pulso del núcleo
+    // Pulso
     const pulse =
+
         1
+
         +
+
         Math.sin(
             time * 2
         )
+
         * 0.04;
 
 
@@ -1537,12 +1732,12 @@ function animate() {
     );
 
 
-    // Rotación galaxia
+    // Rotación general
     galaxyGroup.rotation.y +=
         0.001;
 
 
-    // Rotación resplandor
+    // Rotación del resplandor
     ring.rotation.z -=
         0.002;
 
@@ -1559,7 +1754,9 @@ function animate() {
             el.position.x =
 
                 Math.cos(
+
                     el.userData.angle
+
                 )
 
                 *
@@ -1570,7 +1767,9 @@ function animate() {
             el.position.z =
 
                 Math.sin(
+
                     el.userData.angle
+
                 )
 
                 *
@@ -1587,7 +1786,9 @@ function animate() {
                 Math.sin(
 
                     time
+
                     +
+
                     el.userData.angle
                     * 5
 
@@ -1600,7 +1801,7 @@ function animate() {
     );
 
 
-    // El texto siempre mira a la cámara
+    // Texto mirando siempre a cámara
     sunTextSprite.lookAt(
         camera.position
     );
@@ -1621,36 +1822,54 @@ animate();
 
 
 // =====================================================
-// RESPONSIVE
+// EVENTOS RESPONSIVE
 // =====================================================
 
 window.addEventListener(
 
     "resize",
 
+    resizeScene
+
+);
+
+
+window.addEventListener(
+
+    "orientationchange",
+
     () => {
 
-        camera.aspect =
+        setTimeout(
 
-            window.innerWidth
-            /
-            window.innerHeight;
+            resizeScene,
 
-
-        camera.updateProjectionMatrix();
-
-
-        renderer.setSize(
-
-            window.innerWidth,
-
-            window.innerHeight
+            300
 
         );
 
     }
 
 );
+
+
+if (
+    window.visualViewport
+) {
+
+    window.visualViewport.addEventListener(
+
+        "resize",
+
+        resizeScene
+
+    );
+
+}
+
+
+// Ajuste inicial
+resizeScene();
 
 </script>
 
