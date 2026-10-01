@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Galaxia del Amor 🌌 - Kenia Hernández</title>
+<style>
+html, body { margin: 0; height: 100%; overflow: hidden; background: #000; font-family: Arial, sans-serif; }
+canvas { display: block; }
+.title { position: fixed; top: 30px; width: 100%; text-align: center; font-size: 48px; font-weight: bold; color: #FFFDE7; text-shadow: 0 0 10px #FFEB3B, 0 0 20px #FFC107, 0 0 40px #FF9800; z-index: 10; pointer-events: none; }
+#play-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); border: 2px solid #FFEB3B; color: #FFEB3B; padding: 10px 20px; font-size: 18px; border-radius: 20px; cursor: pointer; z-index: 20; text-shadow: 0 0 5px #FFEB3B; box-shadow: 0 0 10px rgba(255, 235, 59, 0.5); transition: 0.3s; }
+#play-btn:hover { background: rgba(255, 235, 59, 0.2); }
+</style>
+</head>
+<body>
+<div class="title">Kenia Hernandez</div>
+<button id="play-btn">🎵 Reproducir Música</button>
+<canvas id="c"></canvas>
+<audio id="audio" loop preload="auto">
+    <source src="thalia_por_lo_que_reste_de_vida.mp3" type="audio/mpeg">
+</audio>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+// ===== AUDIO =====
+const audio = document.getElementById("audio");
+const playBtn = document.getElementById("play-btn");
+playBtn.addEventListener("click", () => { if (audio.paused) { audio.play().catch(e => console.error("No se pudo reproducir el audio.", e)); playBtn.style.display = "none"; } });
+// ===== ESCENA =====
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x000000, 0.001); 
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 5000);
+camera.position.set(0, 300, 700); 
+const renderer = new THREE.WebGLRenderer({ canvas: c, antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+// ===== CONTROLES DE ZOOM Y ROTACIÓN =====
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.enablePan = false; 
+controls.minDistance = 200; 
+controls.maxDistance = 2000; 
+controls.maxPolarAngle = Math.PI / 2 + 0.1; 
+// ===== GRUPO PRINCIPAL DE LA GALAXIA =====
+const galaxyGroup = new THREE.Group();
+scene.add(galaxyGroup);
+// ===== ESTRELLAS DE FONDO (UNIVERSO) =====
+const starsGeo = new THREE.BufferGeometry();
+const starsCount = 20000; 
+const pos = new Float32Array(starsCount * 3);
+const cols = new Float32Array(starsCount * 3);
+for(let i = 0; i < starsCount; i++) {
+    pos[i*3] = (Math.random() - 0.5) * 5000;
+    pos[i*3+1] = (Math.random() - 0.5) * 4000;
+    pos[i*3+2] = (Math.random() - 0.5) * 5000;
+    const mix = Math.random();
+    cols[i*3] = 1; 
+    cols[i*3+1] = 0.8 + (mix * 0.2); 
+    cols[i*3+2] = mix * 0.5; 
+}
+starsGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+starsGeo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+const starsMat = new THREE.PointsMaterial({ size: 1.5, vertexColors: true, transparent: true, opacity: 0.8 });
+scene.add(new THREE.Points(starsGeo, starsMat));
+// ===== POLVO GALÁCTICO (ESTRELLAS EN EL DISCO) =====
+const dustGeo = new THREE.BufferGeometry();
+const dustCount = 40000; 
+const dustPos = new Float32Array(dustCount * 3);
+const dustCols = new Float32Array(dustCount * 3);
+for(let i = 0; i < dustCount; i++) {
+    const radius = 100 + Math.random() * 900;
+    const theta = Math.random() * Math.PI * 2;
+    const y = (Math.random() - 0.5) * (Math.random() * 100); 
+    dustPos[i*3] = Math.cos(theta) * radius;
+    dustPos[i*3+1] = y;
+    dustPos[i*3+2] = Math.sin(theta) * radius;
+    const mix = Math.random();
+    dustCols[i*3] = 1; 
+    dustCols[i*3+1] = 0.9 + (mix * 0.1); 
+    dustCols[i*3+2] = mix * 0.2; 
+}
+dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+dustGeo.setAttribute('color', new THREE.BufferAttribute(dustCols, 3));
+const dustMat = new THREE.PointsMaterial({ size: 2, vertexColors: true, transparent: true, opacity: 1, blending: THREE.AdditiveBlending });
+galaxyGroup.add(new THREE.Points(dustGeo, dustMat)); 
+// ===== SOL CENTRAL CON TEXTO "FLORES AMARILLAS" =====
+const sunCoreRadius = 70;
+const sunCore = new THREE.Mesh(new THREE.SphereGeometry(sunCoreRadius, 32, 32), new THREE.MeshBasicMaterial({ color: 0x050505 }));
+galaxyGroup.add(sunCore);
+function createGlowingRing() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1024; canvas.height = 1024;
+    const ctx = canvas.getContext("2d");
+    const grad = ctx.createRadialGradient(512, 512, 100, 512, 512, 512);
+    grad.addColorStop(0, "rgba(255, 255, 255, 1)");
+    grad.addColorStop(0.2, "rgba(255, 235, 59, 1)");
+    grad.addColorStop(0.5, "rgba(255, 152, 0, 0.4)");
+    grad.addColorStop(1, "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 1024, 1024);
+    return new THREE.CanvasTexture(canvas);
+}
+const ring = new THREE.Mesh(new THREE.PlaneGeometry(450, 450), new THREE.MeshBasicMaterial({ map: createGlowingRing(), transparent: true, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false }));
+ring.rotation.x = -Math.PI / 2;
+galaxyGroup.add(ring);
+// ===== TEXTO "FLORES AMARILLAS" ESTÁTICO SOBRE EL SOL =====
+function createSunText() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1024; canvas.height = 256;
+    const ctx = canvas.getContext("2d");
+    ctx.font = "bold 80px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "white";
+    // Resplandor para el texto
+    ctx.shadowColor = "rgba(255, 235, 59, 0.8)";
+    ctx.shadowBlur = 20;
+    ctx.fillText("¿Quieres ser mi novia?", 512, 100);
+    return new THREE.CanvasTexture(canvas);
+}
+const sunTextMaterial = new THREE.SpriteMaterial({
+    map: createSunText(),
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthTest: false // Asegura que se renderice encima de la galaxia
+});
+const sunTextSprite = new THREE.Sprite(sunTextMaterial);
+sunTextSprite.scale.set(100, 25, 1);
+sunTextSprite.position.set(0, sunCoreRadius -50, 0); // Posiciona encima del núcleo del sol
+scene.add(sunTextSprite); // Se añade a la escena, no a la galaxia, para que sea estático
+// ===== ELEMENTOS ORBITANTES (GIRASOLES Y FRASES) =====
+const loader = new THREE.TextureLoader();
+loader.setCrossOrigin('anonymous');
+function createProceduralSunflowerTexture() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256; canvas.height = 256;
+    const ctx = canvas.getContext("2d");
+    const center = 128;
+    ctx.beginPath(); ctx.arc(center, center, 40, 0, Math.PI * 2);
+    ctx.fillStyle = "#4B3621"; ctx.fill();
+    ctx.fillStyle = "#2D1A11"; ctx.fillStyle = "#2D1A11"; 
+    for (let i = 0; i < 60; i++) {
+        const radius = Math.random() * 35;
+        const angle = Math.random() * Math.PI * 2;
+        ctx.beginPath(); ctx.arc(center + radius * Math.cos(angle), center + radius * Math.sin(angle), 1.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    const numPetals = 20 + Math.floor(Math.random() * 8); 
+    const petalLength = 70; const petalWidth = 25;
+    const petalColor = Math.random() > 0.5 ? "#FFD700" : "#FFC107"; 
+    ctx.fillStyle = petalColor;
+    for (let i = 0; i < numPetals; i++) {
+        ctx.save(); ctx.translate(center, center); ctx.rotate((i * Math.PI * 2) / numPetals);
+        ctx.beginPath(); ctx.ellipse(0, -center + petalLength / 2, petalWidth / 2, petalLength / 2, 0, 0, Math.PI * 2);
+        ctx.fill(); ctx.restore();
+    }
+    return new THREE.CanvasTexture(canvas);
+}
+const flowerTextures = [
+    loader.load("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f33b.png"),
+    loader.load("https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f33b.png"),
+    createProceduralSunflowerTexture(), createProceduralSunflowerTexture()  
+];
+const elementsToOrbit = []; 
+for(let i = 0; i < 160; i++) {
+    const tex = flowerTextures[Math.floor(Math.random() * flowerTextures.length)];
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true }));
+    const radius = 150 + Math.random() * 750; 
+    const angle = Math.random() * Math.PI * 2;
+    const size = 30 + Math.random() * 40; 
+    sprite.scale.set(size, size, 1);
+    sprite.userData = { r: radius, angle: angle, speed: 0.0005 + Math.random() * 0.0015, yOffset: (Math.random() - 0.5) * 80 };
+    galaxyGroup.add(sprite);
+    elementsToOrbit.push(sprite);
+}
+const frases = [ "Eres muy especial ✨", "Siempre brillas 💛", "Eres mi vida 🧬", "Sonríe siempre🌻", "Mi flor favorita 🌻", "Siempre bella 🥰", "Eres Luz 🌟", "Mi sol ☀️", "Luz en mi vida 💫", "El amor de mi vida ❤️", "Mi universo 🌌", "Te Amo ❤️", "Mi persona favorita 🫂", "Eres pura magia ✨", "Pintas mi mundo 💛", "Mi pedacito de cielo 🌌", "Contigo todo es mejor ❤️‍🩹", "Eres mi hogar 🏠" ];
+function createFraseText(text) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1024; canvas.height = 128; 
+    const ctx = canvas.getContext("2d");
+    ctx.font = "bold 60px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.shadowColor = "#FFEB3B"; ctx.shadowBlur = 15; ctx.fillStyle = "#FFFDE7";
+    ctx.fillText(text, 512, 64);
+    ctx.shadowBlur = 30; ctx.shadowColor = "#FF9800"; ctx.fillText(text, 512, 64);
+    return new THREE.CanvasTexture(canvas);
+}
+for(let i = 0; i < 60; i++) {
+    const tex = createFraseText(frases[i % frases.length]);
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, blending: THREE.AdditiveBlending }));
+    const radius = 200 + Math.random() * 650;
+    const angle = Math.random() * Math.PI * 2;
+    sprite.scale.set(160, 20, 1); 
+    sprite.userData = { r: radius, angle: angle, speed: 0.0007 + Math.random() * 0.0012, yOffset: (Math.random() - 0.5) * 100 };
+    galaxyGroup.add(sprite);
+    elementsToOrbit.push(sprite);
+}
+// ===== ANIMACIÓN =====
+let time = 0;
+function animate() {
+    requestAnimationFrame(animate);
+    time += 0.01;
+    controls.update();
+    const pulse = 1 + Math.sin(time * 2) * 0.04;
+    sunCore.scale.set(pulse, pulse, pulse);
+    ring.scale.set(pulse, pulse, pulse);
+    galaxyGroup.rotation.y += 0.001;
+    ring.rotation.z -= 0.002;
+    elementsToOrbit.forEach(el => {
+        el.userData.angle -= el.userData.speed; 
+        el.position.x = Math.cos(el.userData.angle) * el.userData.r;
+        el.position.z = Math.sin(el.userData.angle) * el.userData.r;
+        el.position.y = el.userData.yOffset + Math.sin(time + el.userData.angle * 5) * 15;
+    });
+    // El texto del sol se actualiza para mirar siempre a la cámara
+    sunTextSprite.lookAt(camera.position); 
+    renderer.render(scene, camera);
+}
+animate();
+window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
