@@ -16,7 +16,7 @@ canvas { display: block; }
 <button id="play-btn">🎵 Reproducir Música</button>
 <canvas id="c"></canvas>
 <audio id="audio" loop preload="auto">
-    <source src="thalia_por_lo_que_reste_de_vida.mp3" type="audio/mpeg">
+    <source src="La_Mujer_Perfecta.mp3" type="audio/mpeg">
 </audio>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -115,7 +115,7 @@ function createSunText() {
     // Resplandor para el texto
     ctx.shadowColor = "rgba(255, 235, 59, 0.8)";
     ctx.shadowBlur = 20;
-    ctx.fillText("¿Quieres ser mi novia?", 512, 100);
+    ctx.fillText("Feliz Cumpleaños Lupeeeee", 512, 100);
     return new THREE.CanvasTexture(canvas);
 }
 const sunTextMaterial = new THREE.SpriteMaterial({
@@ -173,7 +173,7 @@ for(let i = 0; i < 160; i++) {
     galaxyGroup.add(sprite);
     elementsToOrbit.push(sprite);
 }
-const frases = [ "Eres muy especial ✨", "Siempre brillas 💛", "Eres mi vida 🧬", "Sonríe siempre🌻", "Mi flor favorita 🌻", "Siempre bella 🥰", "Eres Luz 🌟", "Mi sol ☀️", "Luz en mi vida 💫", "El amor de mi vida ❤️", "Mi universo 🌌", "Te Amo ❤️", "Mi persona favorita 🫂", "Eres pura magia ✨", "Pintas mi mundo 💛", "Mi pedacito de cielo 🌌", "Contigo todo es mejor ❤️‍🩹", "Eres mi hogar 🏠" ];
+const frases = [ "Eres muy especial ✨", "Siempre brillas 💛", "Sonríe siempre🌻", "Mi flor favorita 🌻", "Siempre bella 🥰", "Eres Luz 🌟", "Eres un sol ☀️", "Luz en mi vida 💫", "Mi universo 🌌", "Eres pura magia ✨", "Pintas mi mundo 💛", "Mi pedacito de cielo 🌌", "Contigo todo es mejor ❤️‍🩹","Feliz Cumpleañoos 🎉" ];
 function createFraseText(text) {
     const canvas = document.createElement("canvas");
     canvas.width = 1024; canvas.height = 128; 
