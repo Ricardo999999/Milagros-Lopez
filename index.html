@@ -28,49 +28,36 @@ html,
 body {
     margin: 0;
     padding: 0;
-
     width: 100%;
     height: 100%;
-
     overflow: hidden;
-
     background: #000;
-
     font-family: Arial, sans-serif;
-
     touch-action: none;
-
     overscroll-behavior: none;
 }
 
 body {
     position: fixed;
-
     top: 0;
     left: 0;
-
     width: 100vw;
     height: 100vh;
 }
 
 canvas {
     display: block;
-
     width: 100vw !important;
     height: 100vh !important;
-
     position: fixed;
-
     top: 0;
     left: 0;
 }
 
 #play-btn {
     position: fixed;
-
     bottom: 30px;
     left: 50%;
-
     transform: translateX(-50%);
 
     background: rgba(0, 0, 0, 0.65);
@@ -99,12 +86,10 @@ canvas {
 }
 
 #play-btn:hover {
-    background:
-        rgba(255, 105, 180, 0.2);
+    background: rgba(255, 105, 180, 0.2);
 }
 
 </style>
-
 </head>
 
 <body>
@@ -135,7 +120,7 @@ canvas {
 <script>
 
 // =====================================================
-// AUDIO
+// AUDIO Y BOTÓN
 // =====================================================
 
 const audio =
@@ -143,6 +128,17 @@ const audio =
 
 const playBtn =
     document.getElementById("play-btn");
+
+
+// Mantener el botón oculto durante la sesión
+if (
+    sessionStorage.getItem("musicStarted") === "true"
+) {
+
+    playBtn.style.display =
+        "none";
+
+}
 
 
 // =====================================================
@@ -251,7 +247,7 @@ controls.maxPolarAngle =
 
 
 // =====================================================
-// GALAXIA PRINCIPAL
+// GALAXIA
 // =====================================================
 
 const galaxyGroup =
@@ -263,7 +259,7 @@ scene.add(
 
 
 // =====================================================
-// ESTRELLAS DE FONDO
+// ESTRELLAS DEL UNIVERSO
 // =====================================================
 
 const starsGeo =
@@ -419,8 +415,10 @@ for (
         Math.cos(theta)
         * radius;
 
+
     dustPos[i * 3 + 1] =
         y;
+
 
     dustPos[i * 3 + 2] =
         Math.sin(theta)
@@ -533,7 +531,7 @@ galaxyGroup.add(
 
 
 // =====================================================
-// RESPLANDOR CENTRAL
+// RESPLANDOR ROSADO
 // =====================================================
 
 function createGlowingRing() {
@@ -646,6 +644,7 @@ const ring =
 
 ring.rotation.x =
     -Math.PI / 2;
+
 
 galaxyGroup.add(
     ring
@@ -765,7 +764,7 @@ scene.add(
 
 
 // =====================================================
-// FLOR ROSADA TRANSPARENTE
+// FLOR ROSADA
 // =====================================================
 
 function createPinkFlowerTexture() {
@@ -932,7 +931,6 @@ function createPinkFlowerTexture() {
             * Math.PI
             * 2
             / innerPetals
-
             + 0.25
 
         );
@@ -954,7 +952,6 @@ function createPinkFlowerTexture() {
             0,
             "#FFC1DC"
         );
-
 
         gradient.addColorStop(
             1,
@@ -997,7 +994,7 @@ function createPinkFlowerTexture() {
 
 
     // =================================================
-    // CENTRO
+    // CENTRO DE LA FLOR
     // =================================================
 
     const centerGradient =
@@ -1055,7 +1052,10 @@ function createPinkFlowerTexture() {
     ctx.fill();
 
 
-    // Detalles blancos
+    // =================================================
+    // DETALLES BLANCOS
+    // =================================================
+
     for (
         let i = 0;
         i < 20;
@@ -1470,7 +1470,7 @@ for (
 
 
 // =====================================================
-// AJUSTAR TAMAÑO DE ESCENA
+// AJUSTAR ESCENA
 // =====================================================
 
 function resizeScene() {
@@ -1512,6 +1512,18 @@ function resizeScene() {
 
     );
 
+
+    // Nunca volver a mostrar el botón
+    if (
+        sessionStorage.getItem("musicStarted")
+        === "true"
+    ) {
+
+        playBtn.style.display =
+            "none";
+
+    }
+
 }
 
 
@@ -1523,26 +1535,45 @@ playBtn.addEventListener(
     "click",
     async () => {
 
+        // Guardar que ya se presionó
+        sessionStorage.setItem(
+            "musicStarted",
+            "true"
+        );
+
+
+        // Ocultarlo inmediatamente
+        playBtn.style.display =
+            "none";
+
+
         // =========================================
-        // REPRODUCIR AUDIO
+        // REPRODUCIR MÚSICA
         // =========================================
 
-        if (audio.paused) {
+        if (
+            audio.paused
+        ) {
 
-            audio
-                .play()
-                .catch(
+            try {
 
-                    e =>
-                        console.error(
+                await audio.play();
 
-                            "No se pudo reproducir el audio.",
+            }
 
-                            e
+            catch (
+                error
+            ) {
 
-                        )
+                console.log(
+
+                    "No se pudo reproducir el audio:",
+
+                    error
 
                 );
+
+            }
 
         }
 
@@ -1560,7 +1591,9 @@ playBtn.addEventListener(
             );
 
 
-        if (isMobile) {
+        if (
+            isMobile
+        ) {
 
             // =====================================
             // PANTALLA COMPLETA
@@ -1645,7 +1678,7 @@ playBtn.addEventListener(
 
                 console.log(
 
-                    "El navegador no permite bloquear la orientación:",
+                    "No se pudo bloquear la orientación:",
 
                     error
 
@@ -1654,14 +1687,6 @@ playBtn.addEventListener(
             }
 
         }
-
-
-        // =========================================
-        // OCULTAR BOTÓN
-        // =========================================
-
-        playBtn.style.display =
-            "none";
 
 
         // =========================================
@@ -1702,7 +1727,6 @@ function animate() {
     controls.update();
 
 
-    // Pulso
     const pulse =
 
         1
@@ -1738,17 +1762,14 @@ function animate() {
     );
 
 
-    // Rotación general
     galaxyGroup.rotation.y +=
         0.001;
 
 
-    // Rotación del resplandor
     ring.rotation.z -=
         0.002;
 
 
-    // Movimiento orbital
     elementsToOrbit.forEach(
 
         el => {
@@ -1807,7 +1828,6 @@ function animate() {
     );
 
 
-    // Texto mirando siempre a cámara
     sunTextSprite.lookAt(
         camera.position
     );
@@ -1828,23 +1848,48 @@ animate();
 
 
 // =====================================================
-// EVENTOS RESPONSIVE
+// CAMBIO DE TAMAÑO
 // =====================================================
 
 window.addEventListener(
-
     "resize",
+    () => {
 
-    resizeScene
+        resizeScene();
 
+
+        if (
+            sessionStorage.getItem("musicStarted")
+            === "true"
+        ) {
+
+            playBtn.style.display =
+                "none";
+
+        }
+
+    }
 );
 
 
+// =====================================================
+// CAMBIO DE ORIENTACIÓN
+// =====================================================
+
 window.addEventListener(
-
     "orientationchange",
-
     () => {
+
+        if (
+            sessionStorage.getItem("musicStarted")
+            === "true"
+        ) {
+
+            playBtn.style.display =
+                "none";
+
+        }
+
 
         setTimeout(
 
@@ -1855,26 +1900,102 @@ window.addEventListener(
         );
 
     }
-
 );
 
+
+// =====================================================
+// VISUAL VIEWPORT
+// =====================================================
 
 if (
     window.visualViewport
 ) {
 
     window.visualViewport.addEventListener(
-
         "resize",
+        () => {
 
-        resizeScene
+            resizeScene();
 
+
+            if (
+                sessionStorage.getItem("musicStarted")
+                === "true"
+            ) {
+
+                playBtn.style.display =
+                    "none";
+
+            }
+
+        }
     );
 
 }
 
 
-// Ajuste inicial
+// =====================================================
+// CAMBIO DE FULLSCREEN
+// =====================================================
+
+document.addEventListener(
+    "fullscreenchange",
+    () => {
+
+        if (
+            sessionStorage.getItem("musicStarted")
+            === "true"
+        ) {
+
+            playBtn.style.display =
+                "none";
+
+        }
+
+
+        setTimeout(
+
+            resizeScene,
+
+            200
+
+        );
+
+    }
+);
+
+
+document.addEventListener(
+    "webkitfullscreenchange",
+    () => {
+
+        if (
+            sessionStorage.getItem("musicStarted")
+            === "true"
+        ) {
+
+            playBtn.style.display =
+                "none";
+
+        }
+
+
+        setTimeout(
+
+            resizeScene,
+
+            200
+
+        );
+
+    }
+);
+
+
+// =====================================================
+// AJUSTE INICIAL
+// =====================================================
+
 resizeScene();
 
 </script>
