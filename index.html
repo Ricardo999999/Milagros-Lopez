@@ -28,36 +28,55 @@ html,
 body {
     margin: 0;
     padding: 0;
+
     width: 100%;
     height: 100%;
+
     overflow: hidden;
+
     background: #000;
+
     font-family: Arial, sans-serif;
+
     touch-action: none;
+
     overscroll-behavior: none;
 }
 
 body {
     position: fixed;
+
     top: 0;
     left: 0;
+
     width: 100vw;
     height: 100vh;
 }
 
 canvas {
     display: block;
+
     width: 100vw !important;
     height: 100vh !important;
+
     position: fixed;
+
     top: 0;
     left: 0;
 }
 
+
+/* =====================================================
+   BOTÓN DE MÚSICA
+===================================================== */
+
 #play-btn {
+
     position: fixed;
+
     bottom: 30px;
     left: 50%;
+
     transform: translateX(-50%);
 
     background: rgba(0, 0, 0, 0.65);
@@ -86,30 +105,35 @@ canvas {
 }
 
 #play-btn:hover {
-    background: rgba(255, 105, 180, 0.2);
+
+    background:
+        rgba(255, 105, 180, 0.2);
+
 }
 
 </style>
+
 </head>
 
 <body>
+
 
 <button id="play-btn">
     🎵 Reproducir Música
 </button>
 
+
 <canvas id="c"></canvas>
+
+
+<!-- ===================================================
+     REPRODUCTOR DE AUDIO
+==================================================== -->
 
 <audio
     id="audio"
-    loop
     preload="auto"
->
-    <source
-        src="La_Mujer_Perfecta.mp3"
-        type="audio/mpeg"
-    >
-</audio>
+></audio>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -119,20 +143,98 @@ canvas {
 
 <script>
 
+
 // =====================================================
-// AUDIO Y BOTÓN
+// AUDIO
 // =====================================================
 
 const audio =
     document.getElementById("audio");
 
+
 const playBtn =
     document.getElementById("play-btn");
 
 
-// Mantener el botón oculto durante la sesión
+// =====================================================
+// PLAYLIST
+// =====================================================
+
+const playlist = [
+
+    "La_Mujer_Perfecta.mp3",
+
+    "No_Me_Doy_Por_Vencido.mp3"
+
+];
+
+
+// Canción actual
+let currentSong =
+    0;
+
+
+// Cargar la primera canción
+audio.src =
+    playlist[currentSong];
+
+
+// =====================================================
+// CUANDO TERMINA UNA CANCIÓN
+// =====================================================
+
+audio.addEventListener(
+    "ended",
+    () => {
+
+        // Pasar a la siguiente canción
+        currentSong++;
+
+
+        // Si ya terminó la última,
+        // volver nuevamente a la primera
+        if (
+            currentSong >=
+            playlist.length
+        ) {
+
+            currentSong =
+                0;
+
+        }
+
+
+        // Cargar siguiente canción
+        audio.src =
+            playlist[currentSong];
+
+
+        // Reproducir automáticamente
+        audio.play().catch(
+
+            error => {
+
+                console.log(
+                    "No se pudo reproducir la siguiente canción:",
+                    error
+                );
+
+            }
+
+        );
+
+    }
+);
+
+
+// =====================================================
+// MANTENER BOTÓN OCULTO DURANTE LA SESIÓN
+// =====================================================
+
 if (
-    sessionStorage.getItem("musicStarted") === "true"
+    sessionStorage.getItem(
+        "musicStarted"
+    ) === "true"
 ) {
 
     playBtn.style.display =
@@ -148,10 +250,14 @@ if (
 const scene =
     new THREE.Scene();
 
+
 scene.fog =
     new THREE.FogExp2(
+
         0x000000,
+
         0.001
+
     );
 
 
@@ -173,10 +279,15 @@ const camera =
 
     );
 
+
 camera.position.set(
+
     0,
+
     300,
+
     700
+
 );
 
 
@@ -187,6 +298,7 @@ camera.position.set(
 const canvas =
     document.getElementById("c");
 
+
 const renderer =
     new THREE.WebGLRenderer({
 
@@ -196,6 +308,7 @@ const renderer =
 
     });
 
+
 renderer.setSize(
 
     window.innerWidth,
@@ -204,11 +317,15 @@ renderer.setSize(
 
 );
 
+
 renderer.setPixelRatio(
 
     Math.min(
+
         window.devicePixelRatio,
+
         2
+
     )
 
 );
@@ -227,31 +344,38 @@ const controls =
 
     );
 
+
 controls.enableDamping =
     true;
+
 
 controls.dampingFactor =
     0.05;
 
+
 controls.enablePan =
     false;
+
 
 controls.minDistance =
     200;
 
+
 controls.maxDistance =
     2000;
+
 
 controls.maxPolarAngle =
     Math.PI / 2 + 0.1;
 
 
 // =====================================================
-// GALAXIA
+// GRUPO PRINCIPAL DE LA GALAXIA
 // =====================================================
 
 const galaxyGroup =
     new THREE.Group();
+
 
 scene.add(
     galaxyGroup
@@ -265,13 +389,16 @@ scene.add(
 const starsGeo =
     new THREE.BufferGeometry();
 
+
 const starsCount =
     20000;
+
 
 const pos =
     new Float32Array(
         starsCount * 3
     );
+
 
 const cols =
     new Float32Array(
@@ -286,15 +413,23 @@ for (
 ) {
 
     pos[i * 3] =
+
         (Math.random() - 0.5)
+
         * 5000;
 
+
     pos[i * 3 + 1] =
+
         (Math.random() - 0.5)
+
         * 4000;
 
+
     pos[i * 3 + 2] =
+
         (Math.random() - 0.5)
+
         * 5000;
 
 
@@ -305,13 +440,23 @@ for (
     cols[i * 3] =
         1;
 
+
     cols[i * 3 + 1] =
+
         0.65
-        + mix * 0.35;
+
+        +
+
+        mix * 0.35;
+
 
     cols[i * 3 + 2] =
+
         0.8
-        + mix * 0.2;
+
+        +
+
+        mix * 0.2;
 
 }
 
@@ -321,19 +466,26 @@ starsGeo.setAttribute(
     "position",
 
     new THREE.BufferAttribute(
+
         pos,
+
         3
+
     )
 
 );
+
 
 starsGeo.setAttribute(
 
     "color",
 
     new THREE.BufferAttribute(
+
         cols,
+
         3
+
     )
 
 );
@@ -373,13 +525,16 @@ scene.add(
 const dustGeo =
     new THREE.BufferGeometry();
 
+
 const dustCount =
     40000;
+
 
 const dustPos =
     new Float32Array(
         dustCount * 3
     );
+
 
 const dustCols =
     new Float32Array(
@@ -394,26 +549,43 @@ for (
 ) {
 
     const radius =
+
         100
-        + Math.random()
-        * 900;
+
+        +
+
+        Math.random() * 900;
 
 
     const theta =
+
         Math.random()
-        * Math.PI
-        * 2;
+
+        *
+
+        Math.PI
+
+        *
+
+        2;
 
 
     const y =
+
         (Math.random() - 0.5)
+
         *
+
         (Math.random() * 100);
 
 
     dustPos[i * 3] =
+
         Math.cos(theta)
-        * radius;
+
+        *
+
+        radius;
 
 
     dustPos[i * 3 + 1] =
@@ -421,8 +593,12 @@ for (
 
 
     dustPos[i * 3 + 2] =
+
         Math.sin(theta)
-        * radius;
+
+        *
+
+        radius;
 
 
     const mix =
@@ -432,13 +608,23 @@ for (
     dustCols[i * 3] =
         1;
 
+
     dustCols[i * 3 + 1] =
+
         0.55
-        + mix * 0.4;
+
+        +
+
+        mix * 0.4;
+
 
     dustCols[i * 3 + 2] =
+
         0.75
-        + mix * 0.25;
+
+        +
+
+        mix * 0.25;
 
 }
 
@@ -448,19 +634,26 @@ dustGeo.setAttribute(
     "position",
 
     new THREE.BufferAttribute(
+
         dustPos,
+
         3
+
     )
 
 );
+
 
 dustGeo.setAttribute(
 
     "color",
 
     new THREE.BufferAttribute(
+
         dustCols,
+
         3
+
     )
 
 );
@@ -503,6 +696,7 @@ galaxyGroup.add(
 const sunCoreRadius =
     70;
 
+
 const sunCore =
     new THREE.Mesh(
 
@@ -518,7 +712,8 @@ const sunCore =
 
         new THREE.MeshBasicMaterial({
 
-            color: 0x050505
+            color:
+                0x050505
 
         })
 
@@ -541,8 +736,10 @@ function createGlowingRing() {
             "canvas"
         );
 
+
     canvas.width =
         1024;
+
 
     canvas.height =
         1024;
@@ -569,39 +766,64 @@ function createGlowingRing() {
 
 
     grad.addColorStop(
+
         0,
+
         "rgba(255,255,255,1)"
+
     );
 
+
     grad.addColorStop(
+
         0.15,
+
         "rgba(255,182,217,1)"
+
     );
 
+
     grad.addColorStop(
+
         0.35,
+
         "rgba(255,105,180,0.8)"
+
     );
 
+
     grad.addColorStop(
+
         0.65,
+
         "rgba(255,20,147,0.25)"
+
     );
 
+
     grad.addColorStop(
+
         1,
+
         "rgba(0,0,0,0)"
+
     );
 
 
     ctx.fillStyle =
         grad;
 
+
     ctx.fillRect(
+
         0,
+
         0,
+
         1024,
+
         1024
+
     );
 
 
@@ -612,12 +834,19 @@ function createGlowingRing() {
 }
 
 
+// =====================================================
+// ANILLO CENTRAL
+// =====================================================
+
 const ring =
     new THREE.Mesh(
 
         new THREE.PlaneGeometry(
+
             450,
+
             450
+
         ),
 
         new THREE.MeshBasicMaterial({
@@ -662,8 +891,10 @@ function createSunText() {
             "canvas"
         );
 
+
     canvas.width =
         1024;
+
 
     canvas.height =
         256;
@@ -678,17 +909,22 @@ function createSunText() {
     ctx.font =
         "bold 80px Arial";
 
+
     ctx.textAlign =
         "center";
+
 
     ctx.textBaseline =
         "middle";
 
+
     ctx.fillStyle =
         "white";
 
+
     ctx.shadowColor =
         "rgba(255,105,180,1)";
+
 
     ctx.shadowBlur =
         25;
@@ -778,6 +1014,7 @@ function createPinkFlowerTexture() {
     canvas.width =
         256;
 
+
     canvas.height =
         256;
 
@@ -793,10 +1030,15 @@ function createPinkFlowerTexture() {
 
 
     ctx.clearRect(
+
         0,
+
         0,
+
         256,
+
         256
+
     );
 
 
@@ -818,17 +1060,29 @@ function createPinkFlowerTexture() {
 
 
         ctx.translate(
+
             center,
+
             center
+
         );
 
 
         ctx.rotate(
 
             i
-            * Math.PI
-            * 2
-            / outerPetals
+
+            *
+
+            Math.PI
+
+            *
+
+            2
+
+            /
+
+            outerPetals
 
         );
 
@@ -837,27 +1091,40 @@ function createPinkFlowerTexture() {
             ctx.createLinearGradient(
 
                 0,
+
                 -100,
 
                 0,
+
                 -20
 
             );
 
 
         gradient.addColorStop(
+
             0,
+
             "#FFD4E8"
+
         );
 
+
         gradient.addColorStop(
+
             0.45,
+
             "#FF8FC7"
+
         );
 
+
         gradient.addColorStop(
+
             1,
+
             "#FF3D9A"
+
         );
 
 
@@ -867,6 +1134,7 @@ function createPinkFlowerTexture() {
 
         ctx.shadowColor =
             "rgba(255,105,180,0.6)";
+
 
         ctx.shadowBlur =
             8;
@@ -920,18 +1188,33 @@ function createPinkFlowerTexture() {
 
 
         ctx.translate(
+
             center,
+
             center
+
         );
 
 
         ctx.rotate(
 
             i
-            * Math.PI
-            * 2
-            / innerPetals
-            + 0.25
+
+            *
+
+            Math.PI
+
+            *
+
+            2
+
+            /
+
+            innerPetals
+
+            +
+
+            0.25
 
         );
 
@@ -940,22 +1223,31 @@ function createPinkFlowerTexture() {
             ctx.createLinearGradient(
 
                 0,
+
                 -70,
 
                 0,
+
                 -10
 
             );
 
 
         gradient.addColorStop(
+
             0,
+
             "#FFC1DC"
+
         );
 
+
         gradient.addColorStop(
+
             1,
+
             "#FF4FA3"
+
         );
 
 
@@ -1001,29 +1293,44 @@ function createPinkFlowerTexture() {
         ctx.createRadialGradient(
 
             center,
+
             center,
+
             2,
 
             center,
+
             center,
+
             30
 
         );
 
 
     centerGradient.addColorStop(
+
         0,
+
         "#FFF8FC"
+
     );
 
+
     centerGradient.addColorStop(
+
         0.35,
+
         "#FFB6D9"
+
     );
 
+
     centerGradient.addColorStop(
+
         1,
+
         "#FF4F9E"
+
     );
 
 
@@ -1063,14 +1370,25 @@ function createPinkFlowerTexture() {
     ) {
 
         const angle =
+
             Math.random()
-            * Math.PI
-            * 2;
+
+            *
+
+            Math.PI
+
+            *
+
+            2;
 
 
         const radius =
+
             Math.random()
-            * 18;
+
+            *
+
+            18;
 
 
         ctx.beginPath();
@@ -1079,15 +1397,24 @@ function createPinkFlowerTexture() {
         ctx.arc(
 
             center
-            + Math.cos(angle)
+
+            +
+
+            Math.cos(angle)
             * radius,
 
             center
-            + Math.sin(angle)
+
+            +
+
+            Math.sin(angle)
             * radius,
 
             1.5
-            + Math.random()
+
+            +
+
+            Math.random()
             * 1.5,
 
             0,
@@ -1139,12 +1466,16 @@ const flowerTextures = [
 
 
 // =====================================================
-// FLORES ORBITANDO
+// ELEMENTOS QUE ORBITAN
 // =====================================================
 
 const elementsToOrbit =
     [];
 
+
+// =====================================================
+// FLORES ORBITANDO
+// =====================================================
 
 for (
     let i = 0;
@@ -1158,7 +1489,9 @@ for (
             Math.floor(
 
                 Math.random()
+
                 *
+
                 flowerTextures.length
 
             )
@@ -1169,13 +1502,17 @@ for (
     const material =
         new THREE.SpriteMaterial({
 
-            map: tex,
+            map:
+                tex,
 
-            transparent: true,
+            transparent:
+                true,
 
-            depthWrite: false,
+            depthWrite:
+                false,
 
-            alphaTest: 0.01
+            alphaTest:
+                0.01
 
         });
 
@@ -1187,20 +1524,35 @@ for (
 
 
     const radius =
+
         150
-        + Math.random()
+
+        +
+
+        Math.random()
         * 750;
 
 
     const angle =
+
         Math.random()
-        * Math.PI
-        * 2;
+
+        *
+
+        Math.PI
+
+        *
+
+        2;
 
 
     const size =
+
         25
-        + Math.random()
+
+        +
+
+        Math.random()
         * 45;
 
 
@@ -1224,13 +1576,21 @@ for (
             angle,
 
         speed:
+
             0.0005
-            + Math.random()
+
+            +
+
+            Math.random()
             * 0.0015,
 
         yOffset:
+
             (Math.random() - 0.5)
-            * 80
+
+            *
+
+            80
 
     };
 
@@ -1299,7 +1659,7 @@ const frases = [
 
 
 // =====================================================
-// TEXTO DE FRASES
+// CREAR TEXTO DE FRASES
 // =====================================================
 
 function createFraseText(
@@ -1315,6 +1675,7 @@ function createFraseText(
     canvas.width =
         1024;
 
+
     canvas.height =
         128;
 
@@ -1328,11 +1689,14 @@ function createFraseText(
     ctx.font =
         "bold 60px Arial";
 
+
     ctx.textAlign =
         "center";
 
+
     ctx.textBaseline =
         "middle";
+
 
     ctx.fillStyle =
         "#FFF5FA";
@@ -1340,6 +1704,7 @@ function createFraseText(
 
     ctx.shadowColor =
         "#FF69B4";
+
 
     ctx.shadowBlur =
         15;
@@ -1358,6 +1723,7 @@ function createFraseText(
 
     ctx.shadowBlur =
         30;
+
 
     ctx.shadowColor =
         "#FF1493";
@@ -1395,9 +1761,7 @@ for (
         createFraseText(
 
             frases[
-                i
-                %
-                frases.length
+                i % frases.length
             ]
 
         );
@@ -1423,15 +1787,26 @@ for (
 
 
     const radius =
+
         200
-        + Math.random()
+
+        +
+
+        Math.random()
         * 650;
 
 
     const angle =
+
         Math.random()
-        * Math.PI
-        * 2;
+
+        *
+
+        Math.PI
+
+        *
+
+        2;
 
 
     sprite.scale.set(
@@ -1454,13 +1829,21 @@ for (
             angle,
 
         speed:
+
             0.0007
-            + Math.random()
+
+            +
+
+            Math.random()
             * 0.0012,
 
         yOffset:
+
             (Math.random() - 0.5)
-            * 100
+
+            *
+
+            100
 
     };
 
@@ -1485,6 +1868,7 @@ function resizeScene() {
 
     const width =
         window.innerWidth;
+
 
     const height =
         window.innerHeight;
@@ -1521,10 +1905,11 @@ function resizeScene() {
     );
 
 
-    // Nunca volver a mostrar el botón
+    // Mantener el botón oculto
     if (
-        sessionStorage.getItem("musicStarted")
-        === "true"
+        sessionStorage.getItem(
+            "musicStarted"
+        ) === "true"
     ) {
 
         playBtn.style.display =
@@ -1536,59 +1921,70 @@ function resizeScene() {
 
 
 // =====================================================
-// BOTÓN MÚSICA + FULLSCREEN + HORIZONTAL
+// BOTÓN
+// MÚSICA + FULLSCREEN + HORIZONTAL
 // =====================================================
 
 playBtn.addEventListener(
     "click",
     async () => {
 
+
         // Guardar que ya se presionó
         sessionStorage.setItem(
+
             "musicStarted",
+
             "true"
+
         );
 
 
-        // Ocultarlo inmediatamente
+        // Ocultar botón
         playBtn.style.display =
             "none";
 
 
-        // =========================================
-        // REPRODUCIR MÚSICA
-        // =========================================
+        // =============================================
+        // COMENZAR DESDE LA PRIMERA CANCIÓN
+        // =============================================
 
-        if (
-            audio.paused
+        currentSong =
+            0;
+
+
+        audio.src =
+            playlist[currentSong];
+
+
+        // =============================================
+        // REPRODUCIR
+        // =============================================
+
+        try {
+
+            await audio.play();
+
+        }
+
+        catch (
+            error
         ) {
 
-            try {
+            console.log(
 
-                await audio.play();
+                "No se pudo reproducir el audio:",
 
-            }
-
-            catch (
                 error
-            ) {
 
-                console.log(
-
-                    "No se pudo reproducir el audio:",
-
-                    error
-
-                );
-
-            }
+            );
 
         }
 
 
-        // =========================================
+        // =============================================
         // DETECTAR MÓVIL
-        // =========================================
+        // =============================================
 
         const isMobile =
 
@@ -1603,9 +1999,9 @@ playBtn.addEventListener(
             isMobile
         ) {
 
-            // =====================================
+            // =========================================
             // PANTALLA COMPLETA
-            // =====================================
+            // =========================================
 
             try {
 
@@ -1654,9 +2050,9 @@ playBtn.addEventListener(
             }
 
 
-            // =====================================
+            // =========================================
             // ORIENTACIÓN HORIZONTAL
-            // =====================================
+            // =========================================
 
             try {
 
@@ -1671,9 +2067,7 @@ playBtn.addEventListener(
                 ) {
 
                     await screen.orientation.lock(
-
                         "landscape"
-
                     );
 
                 }
@@ -1696,10 +2090,6 @@ playBtn.addEventListener(
 
         }
 
-
-        // =========================================
-        // REAJUSTAR ESCENA
-        // =========================================
 
         setTimeout(
 
@@ -1735,6 +2125,10 @@ function animate() {
     controls.update();
 
 
+    // =================================================
+    // PULSO CENTRAL
+    // =================================================
+
     const pulse =
 
         1
@@ -1745,7 +2139,9 @@ function animate() {
             time * 2
         )
 
-        * 0.04;
+        *
+
+        0.04;
 
 
     sunCore.scale.set(
@@ -1770,6 +2166,10 @@ function animate() {
     );
 
 
+    // =================================================
+    // ROTACIÓN DE LA GALAXIA
+    // =================================================
+
     galaxyGroup.rotation.y +=
         0.001;
 
@@ -1778,9 +2178,14 @@ function animate() {
         0.002;
 
 
+    // =================================================
+    // MOVIMIENTO DE FLORES Y FRASES
+    // =================================================
+
     elementsToOrbit.forEach(
 
         el => {
+
 
             el.userData.angle -=
                 el.userData.speed;
@@ -1789,9 +2194,7 @@ function animate() {
             el.position.x =
 
                 Math.cos(
-
                     el.userData.angle
-
                 )
 
                 *
@@ -1802,9 +2205,7 @@ function animate() {
             el.position.z =
 
                 Math.sin(
-
                     el.userData.angle
-
                 )
 
                 *
@@ -1824,18 +2225,20 @@ function animate() {
 
                     +
 
-                    el.userData.angle
-                    * 5
+                    el.userData.angle * 5
 
                 )
 
-                * 15;
+                *
+
+                15;
 
         }
 
     );
 
 
+    // Texto siempre mirando a cámara
     sunTextSprite.lookAt(
         camera.position
     );
@@ -1860,15 +2263,18 @@ animate();
 // =====================================================
 
 window.addEventListener(
+
     "resize",
+
     () => {
 
         resizeScene();
 
 
         if (
-            sessionStorage.getItem("musicStarted")
-            === "true"
+            sessionStorage.getItem(
+                "musicStarted"
+            ) === "true"
         ) {
 
             playBtn.style.display =
@@ -1877,6 +2283,7 @@ window.addEventListener(
         }
 
     }
+
 );
 
 
@@ -1885,12 +2292,16 @@ window.addEventListener(
 // =====================================================
 
 window.addEventListener(
+
     "orientationchange",
+
     () => {
 
+
         if (
-            sessionStorage.getItem("musicStarted")
-            === "true"
+            sessionStorage.getItem(
+                "musicStarted"
+            ) === "true"
         ) {
 
             playBtn.style.display =
@@ -1908,6 +2319,7 @@ window.addEventListener(
         );
 
     }
+
 );
 
 
@@ -1920,15 +2332,18 @@ if (
 ) {
 
     window.visualViewport.addEventListener(
+
         "resize",
+
         () => {
 
             resizeScene();
 
 
             if (
-                sessionStorage.getItem("musicStarted")
-                === "true"
+                sessionStorage.getItem(
+                    "musicStarted"
+                ) === "true"
             ) {
 
                 playBtn.style.display =
@@ -1937,6 +2352,7 @@ if (
             }
 
         }
+
     );
 
 }
@@ -1947,12 +2363,16 @@ if (
 // =====================================================
 
 document.addEventListener(
+
     "fullscreenchange",
+
     () => {
 
+
         if (
-            sessionStorage.getItem("musicStarted")
-            === "true"
+            sessionStorage.getItem(
+                "musicStarted"
+            ) === "true"
         ) {
 
             playBtn.style.display =
@@ -1970,16 +2390,21 @@ document.addEventListener(
         );
 
     }
+
 );
 
 
 document.addEventListener(
+
     "webkitfullscreenchange",
+
     () => {
 
+
         if (
-            sessionStorage.getItem("musicStarted")
-            === "true"
+            sessionStorage.getItem(
+                "musicStarted"
+            ) === "true"
         ) {
 
             playBtn.style.display =
@@ -1997,6 +2422,7 @@ document.addEventListener(
         );
 
     }
+
 );
 
 
@@ -2005,6 +2431,7 @@ document.addEventListener(
 // =====================================================
 
 resizeScene();
+
 
 </script>
 
